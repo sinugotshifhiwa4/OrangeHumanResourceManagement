@@ -53,13 +53,7 @@ public class WebFunctions extends WebActions {
             clickObjects(addEmployeePage.createLoginDetails, driver);
             passData(addEmployeePage.username, driver, Username);
             passData(addEmployeePage.password, driver, Password);
-
-            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-            WebElement confirmPwdField = wait.until(ExpectedConditions.visibilityOf(addEmployeePage.confirmPassword));
-            passData(confirmPwdField, driver, ConfirmPassword);
-
-
-            //passData(addEmployeePage.confirmPassword, driver, ConfirmPassword);
+            passData(addEmployeePage.confirmPassword, driver, ConfirmPassword);
             clickObjects(addEmployeePage.saveBtn, driver);
 
             Thread.sleep(4000);
