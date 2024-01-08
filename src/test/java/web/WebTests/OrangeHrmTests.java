@@ -1,5 +1,7 @@
 package web.WebTests;
 
+import com.aventstack.extentreports.ExtentReports;
+import com.aventstack.extentreports.ExtentTest;
 import com.github.javafaker.Faker;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -8,6 +10,7 @@ import org.testng.annotations.Test;
 import web.WebUtilities.PersonalInfo;
 import web.WebUtilities.WebUtilities;
 import web.pageObjects.WebFunctions;
+import web.reports.ExtentReport;
 
 public class OrangeHrmTests {
 
@@ -15,6 +18,8 @@ public class OrangeHrmTests {
     WebFunctions functions = new WebFunctions();
     PersonalInfo personalInfo = new PersonalInfo();
     Faker faker;
+    ExtentReport report = new ExtentReport();
+    ExtentReports reports = new ExtentReports();
 
     String sUrl, sBrowser;
 
@@ -26,6 +31,7 @@ public class OrangeHrmTests {
         sBrowser = Browser;
 
         webUtilities.setWebDriver(webUtilities.initializeWebDriver(sBrowser));
+        reports = report.initilizeExtentReporters("src/reports/report.html");
 
         //setup faker data
         faker = new Faker();
@@ -42,11 +48,16 @@ public class OrangeHrmTests {
     @Test
     public void runTests(){
 
+        ExtentTest test = reports.createTest("OrangeHumanResourceManagement").assignAuthor("Tshifhiwa");
+        ExtentTest node = test.createNode("Test Cases");
 
         try{
             webUtilities.navigate(sUrl);
 
-            functions.logIn(webUtilities.getWebDriver(), personalInfo.getCredentialUsername(), personalInfo.getCredentialPassword());
+            functions.logIn(webUtilities.getWebDriver(),
+                    personalInfo.getCredentialUsername(),
+                    personalInfo.getCredentialPassword(),
+                    node);
             functions.personalInformationManagement(webUtilities.getWebDriver());
             functions.addEmployee(webUtilities.getWebDriver(),
                     personalInfo.getFirstName(),
@@ -66,6 +77,7 @@ public class OrangeHrmTests {
     public void tearDown(){
         try{
             Thread.sleep(5000);
+            reports.flush();
             webUtilities.getWebDriver().close();
             webUtilities.getWebDriver().quit();
         } catch (Exception e) {

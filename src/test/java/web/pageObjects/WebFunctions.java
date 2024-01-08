@@ -1,10 +1,14 @@
 package web.pageObjects;
 
+import com.aventstack.extentreports.ExtentTest;
+import com.aventstack.extentreports.MediaEntityBuilder;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.Assert;
 import web.WebUtilities.WebActions;
+import web.reports.ExtentReport;
 import web.webPageObjects.AddEmployeePage;
 import web.webPageObjects.LoginPage;
 import web.webPageObjects.LogoutPage;
@@ -14,8 +18,9 @@ import java.time.Duration;
 
 public class WebFunctions extends WebActions {
 
+    ExtentReport report = new ExtentReport();
 
-    public void logIn(WebDriver driver, String Username, String Password){
+    public void logIn(WebDriver driver, String Username, String Password, ExtentTest node){
 
         LoginPage loginPage = new LoginPage(driver);
 
@@ -24,8 +29,20 @@ public class WebFunctions extends WebActions {
             passData(loginPage.password, driver, Password);
             clickObjects(loginPage.loginBtn, driver);
 
+            Thread.sleep(3000);
+
+            String filename = report.CaptureScreenShot(driver);
+
+            //Validation
+            if (loginPage.dashboard.isDisplayed()) {
+                node.pass("Login was Successful", MediaEntityBuilder.createScreenCaptureFromBase64String(filename).build());
+            } else {
+                node.fail("Login was Unsuccessful", MediaEntityBuilder.createScreenCaptureFromBase64String(filename).build());
+                Assert.fail("Login was Unsuccessful");
+            }
+
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
     }
 
